@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Octopus Edition Jersey</title>
+<style>
+body { font-family:'Segoe UI',sans-serif; background:#f5f5f5; margin:0;}
+header { display:flex; justify-content:space-between; align-items:center; padding:15px 50px; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.1);}
+header img { height:50px; }
+nav a { margin-left:20px; text-decoration:none; color:#111; font-weight:bold; padding:8px 15px; border-radius:10px; transition:0.2s;}
+nav a:hover { background:#00bfff; color:#fff;}
+#product { display:flex; flex-direction:column; align-items:center; padding:50px;}
+#product img { width:300px; border-radius:20px; }
+button { margin-top:20px; padding:15px 30px; border:none; border-radius:15px; background:#00bfff; color:#fff; cursor:pointer;}
+button:hover { background:#0099cc; }
+</style>
+</head>
+<body>
+<header>
+<img src="https://lh3.googleusercontent.com/sitesv/APaQ0STwIFg1ab4TG6RjsPQ3hVx-7yp1Tl_9ynTgprLy6rqwJyWpi1TmFQPFvbzf7RkChL5SIPqVWQj7xwE7qQZR3Aza4CWx2Q1UJLZjoXuFJ7lYafkVJkw2HN8Jo28oI7dZAolu9jan1E3WYkGq9A_0zY9wcv0skkhToBDF9qp4uzYDdFqzWYFho9lM=w16383" alt="MSA Logo">
+<nav>
+<a href="home.html">Home</a>
+<a href="shop.html">Shop</a>
+<a href="#" onclick="openCart()">🛒</a>
+</nav>
+</header>
+
+<div id="product">
+<img src="https://lh3.googleusercontent.com/sitesv/APaQ0STj9XpPildDCIaffLG3kAHEXrvZw8bMNSkmRqRfJieFuWTfBsh1eADJWESZljW6_lf7AYWO_GJlHAOEmb3nfrTkNSkF3FBhIM0Rf4tKrfIQXAKW6dckX46GFsu5PhMoBvqmIsDIoTXr17t8rtYx3tWn3uHCPBdnTuVSBIhfoa-ul3S15kWl6WV_Gm5CXYYfzruD0fc-u06Dyv0tndZ0abM5ZODP30ln7Zragj0=w1280" alt="Octopus">
+<h2>Octopus Edition Jersey</h2>
+<p>599 TL</p>
+<button onclick="addToCart('Octopus Edition Jersey',599)">Sepete Ekle</button>
+</div>
+
+<script>
+let cart=JSON.parse(localStorage.getItem("userCart")||"[]");
+function addToCart(name,price){ cart.push({name,price}); localStorage.setItem("userCart",JSON.stringify(cart)); alert(name+" sepete eklendi!"); }
+function openCart(){ alert("Sepet modalı açılacak."); }
+</script>
+
+</body>
+</html>
