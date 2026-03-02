@@ -4,18 +4,30 @@
 <meta charset="UTF-8">
 <title>MSA Esports Store</title>
 <style>
-  body { background:#000; color:#fff; font-family: Arial, sans-serif; margin:0; padding:0;}
-  header { background:#111; padding:20px; text-align:center; position: relative;}
-  h1 { color:#00bfff; margin:0; }
-  #cart { position:absolute; top:20px; right:20px; cursor:pointer; font-size:18px;}
-  main { padding:20px; display:flex; flex-wrap:wrap; gap:20px; justify-content:center;}
-  .product { background:#111; padding:15px; border-radius:10px; width:220px; text-align:center;}
-  button { background:#00bfff; color:#000; border:none; padding:10px; cursor:pointer; border-radius:5px; font-weight:bold;}
-  input { padding:5px; margin-top:5px; width:95%; border-radius:5px; border:none; }
-  #formSection { display:none; margin-top:20px; background:#111; padding:15px; border-radius:10px; width: 300px; margin-left:auto; margin-right:auto; }
+  /* Temel body */
+  body { font-family: 'Segoe UI', sans-serif; background:#f5f5f5; color:#111; margin:0; padding:0; }
+  header { background:#fff; padding:20px; text-align:center; box-shadow: 0 2px 6px rgba(0,0,0,0.1); position:relative; }
+  h1 { color:#1a1a1a; margin:0; }
+  #cart { position:absolute; top:25px; right:25px; cursor:pointer; font-size:18px; background:#00bfff; color:#fff; padding:10px 15px; border-radius:12px; font-weight:bold; }
+
+  main { padding:30px; display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+
+  .product { background:#fff; padding:20px; border-radius:15px; width:240px; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); transition:0.2s; }
+  .product:hover { transform: translateY(-5px); box-shadow:0 6px 18px rgba(0,0,0,0.15); }
+  .product h3 { margin:10px 0; color:#111; }
+  .product p { margin:5px 0 15px; font-weight:bold; color:#333; }
+
+  button { background:#00bfff; color:#fff; border:none; padding:10px 15px; cursor:pointer; border-radius:10px; font-weight:bold; transition:0.2s; }
+  button:hover { background:#0099cc; }
+
+  #formSection { display:none; margin-top:30px; background:#fff; padding:25px; border-radius:15px; width:350px; margin-left:auto; margin-right:auto; box-shadow:0 4px 15px rgba(0,0,0,0.1); }
+  #formSection h2 { text-align:center; margin-bottom:20px; color:#1a1a1a; }
+
+  input, select { padding:10px; margin-top:8px; width:100%; border-radius:8px; border:1px solid #ccc; box-sizing:border-box; }
 </style>
 </head>
 <body>
+
 <header>
   <h1>MSA Esports Store</h1>
   <div id="cart">🛒 Sepet (0)</div>
@@ -25,10 +37,17 @@
 
 <div id="formSection">
   <h2>Sipariş Bilgileri</h2>
-  <input type="text" id="name" placeholder="Ad Soyad"><br>
-  <input type="text" id="phone" placeholder="Telefon"><br>
-  <input type="text" id="address" placeholder="Adres"><br>
-  <input type="text" id="discount" placeholder="İndirim Kodu (varsa)"><br>
+  <input type="text" id="name" placeholder="Ad Soyad" required><br>
+  <input type="text" id="phone" placeholder="Telefon (5xx xxx xx xx)" required><br>
+  <select id="country" disabled>
+    <option>Türkiye</option>
+  </select><br>
+  <input type="text" id="city" placeholder="Şehir" required><br>
+  <input type="text" id="district" placeholder="İlçe" required><br>
+  <input type="text" id="neighborhood" placeholder="Mahalle" required><br>
+  <input type="text" id="street" placeholder="Sokak" required><br>
+  <input type="text" id="addressDetails" placeholder="Adres Detayı" required><br>
+  <input type="text" id="discount" placeholder="İndirim Kodu (CARD)" ><br>
   <button id="submitOrder">Siparişi Onayla ve Ödeme Yap</button>
 </div>
 
@@ -49,7 +68,7 @@ function updateCartCount(){
   cartBtn.textContent = `🛒 Sepet (${cart.length})`;
 }
 
-// URL parametreleri ile ürün ekleme
+// URL parametre ile ürün ekleme
 const urlParams = new URLSearchParams(window.location.search);
 const addProduct = urlParams.get('add');
 if(addProduct){
@@ -81,21 +100,46 @@ cartBtn.addEventListener("click", ()=>{
   formSection.style.display = "block";
 });
 
+// Telefon kontrol (Türk numarası)
+function isValidTurkishPhone(phone){
+  const regex = /^5\d{9}$/;
+  return regex.test(phone.replace(/\D/g,''));
+}
+
 // Form gönderimi
 document.getElementById("submitOrder").addEventListener("click", ()=>{
   const name=document.getElementById("name").value;
-  const phone=document.getElementById("phone").value;
-  const address=document.getElementById("address").value;
+  const phone=document.getElementById("phone").value.replace(/\D/g,'');
+  const city=document.getElementById("city").value;
+  const district=document.getElementById("district").value;
+  const neighborhood=document.getElementById("neighborhood").value;
+  const street=document.getElementById("street").value;
+  const addressDetails=document.getElementById("addressDetails").value;
   const discount=document.getElementById("discount").value;
 
-  if(!name || !phone || !address){ alert("Lütfen tüm bilgileri doldurun!"); return; }
+  if(!name || !phone || !city || !district || !neighborhood || !street || !addressDetails){
+    alert("Lütfen tüm bilgileri eksiksiz doldurun!"); return;
+  }
 
-  // EmailJS kullanımı (ayrıntılar için emailjs.com)
+  if(!isValidTurkishPhone(phone)){
+    alert("Lütfen geçerli bir Türk telefon numarası girin (5xx xxx xx xx)!"); return;
+  }
+
+  if(discount && discount.toUpperCase() !== "CARD"){
+    alert("Geçersiz indirim kodu!");
+    return;
+  }
+
+  // EmailJS entegrasyonu
   /*
   emailjs.send("service_id","template_id",{
     name: name,
     phone: phone,
-    address: address,
+    city: city,
+    district: district,
+    neighborhood: neighborhood,
+    street: street,
+    addressDetails: addressDetails,
     discount: discount,
     cart: JSON.stringify(cart)
   },"user_id").then(()=>{ console.log("Mail gönderildi"); }).catch(err=>{console.error(err);});
@@ -108,8 +152,8 @@ document.getElementById("submitOrder").addEventListener("click", ()=>{
 
   alert("Sipariş alındı! Ödeme sayfasına yönlendiriliyorsunuz...");
 
-  // iyzico ödeme linki
-  window.location.href="https://www.sandbox.shopier.com/checkoutlink"; // kendi iyzico linkini buraya koy
+  // iyzico ödeme linki (kendi hesabına göre değiştir)
+  window.location.href="https://www.sandbox.shopier.com/checkoutlink";
 });
 
 updateCartCount();
