@@ -3,9 +3,117 @@
 <head>
 <meta charset="UTF-8">
 <title>MSA Esports Store</title>
+<style>
+  body { background:#000; color:#fff; font-family: Arial, sans-serif; margin:0; padding:0;}
+  header { background:#111; padding:20px; text-align:center; position: relative;}
+  h1 { color:#00bfff; margin:0; }
+  #cart { position:absolute; top:20px; right:20px; cursor:pointer; font-size:18px;}
+  main { padding:20px; display:flex; flex-wrap:wrap; gap:20px; justify-content:center;}
+  .product { background:#111; padding:15px; border-radius:10px; width:220px; text-align:center;}
+  button { background:#00bfff; color:#000; border:none; padding:10px; cursor:pointer; border-radius:5px; font-weight:bold;}
+  input { padding:5px; margin-top:5px; width:95%; border-radius:5px; border:none; }
+  #formSection { display:none; margin-top:20px; background:#111; padding:15px; border-radius:10px; width: 300px; margin-left:auto; margin-right:auto; }
+</style>
 </head>
 <body>
-<h1>MSA Esports Store</h1>
-<p>Ürünler ve sepet buraya gelecek.</p>
+<header>
+  <h1>MSA Esports Store</h1>
+  <div id="cart">🛒 Sepet (0)</div>
+</header>
+
+<main id="productList"></main>
+
+<div id="formSection">
+  <h2>Sipariş Bilgileri</h2>
+  <input type="text" id="name" placeholder="Ad Soyad"><br>
+  <input type="text" id="phone" placeholder="Telefon"><br>
+  <input type="text" id="address" placeholder="Adres"><br>
+  <input type="text" id="discount" placeholder="İndirim Kodu (varsa)"><br>
+  <button id="submitOrder">Siparişi Onayla ve Ödeme Yap</button>
+</div>
+
+<script>
+const products = [
+  {name:"Msa Esports Octopus Edition Jersey", price:599},
+  {name:"Msa Esports Saturn Edition Jersey", price:599},
+  {name:"Msa Esports Dragon Edition Jersey", price:599},
+  {name:"Msa Esports Wolf Edition Jersey", price:599}
+];
+
+const productList = document.getElementById("productList");
+let cart = JSON.parse(localStorage.getItem("userCart") || "[]");
+const cartBtn = document.getElementById("cart");
+const formSection = document.getElementById("formSection");
+
+function updateCartCount(){
+  cartBtn.textContent = `🛒 Sepet (${cart.length})`;
+}
+
+// URL parametreleri ile ürün ekleme
+const urlParams = new URLSearchParams(window.location.search);
+const addProduct = urlParams.get('add');
+if(addProduct){
+  const prod = products.find(p => p.name.includes(addProduct));
+  if(prod){
+    cart.push(prod);
+    localStorage.setItem("userCart", JSON.stringify(cart));
+  }
+}
+
+// Ürünleri listele
+products.forEach((p,i)=>{
+  const div = document.createElement("div");
+  div.className = "product";
+  div.innerHTML = `<h3>${p.name}</h3><p>${p.price} TL</p>
+    <button onclick="addToCart(${i})">Sepete Ekle</button>`;
+  productList.appendChild(div);
+});
+
+function addToCart(index){
+  cart.push(products[index]);
+  localStorage.setItem("userCart", JSON.stringify(cart));
+  updateCartCount();
+  alert(products[index].name + " sepete eklendi!");
+}
+
+cartBtn.addEventListener("click", ()=>{
+  if(cart.length==0){ alert("Sepet boş!"); return; }
+  formSection.style.display = "block";
+});
+
+// Form gönderimi
+document.getElementById("submitOrder").addEventListener("click", ()=>{
+  const name=document.getElementById("name").value;
+  const phone=document.getElementById("phone").value;
+  const address=document.getElementById("address").value;
+  const discount=document.getElementById("discount").value;
+
+  if(!name || !phone || !address){ alert("Lütfen tüm bilgileri doldurun!"); return; }
+
+  // EmailJS kullanımı (ayrıntılar için emailjs.com)
+  /*
+  emailjs.send("service_id","template_id",{
+    name: name,
+    phone: phone,
+    address: address,
+    discount: discount,
+    cart: JSON.stringify(cart)
+  },"user_id").then(()=>{ console.log("Mail gönderildi"); }).catch(err=>{console.error(err);});
+  */
+
+  // Sepeti temizle
+  cart=[];
+  localStorage.removeItem("userCart");
+  updateCartCount();
+
+  alert("Sipariş alındı! Ödeme sayfasına yönlendiriliyorsunuz...");
+
+  // iyzico ödeme linki
+  window.location.href="https://www.sandbox.shopier.com/checkoutlink"; // kendi iyzico linkini buraya koy
+});
+
+updateCartCount();
+</script>
+
 </body>
 </html>
