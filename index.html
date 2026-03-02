@@ -54,10 +54,10 @@ button:hover { background:#0099cc; }
 
 <script>
 const products=[
-  {name:"Msa Esports Octopus Edition Jersey", price:599, img:"https://via.placeholder.com/200x200?text=Octopus"},
-  {name:"Msa Esports Saturn Edition Jersey", price:599, img:"https://via.placeholder.com/200x200?text=Saturn"},
-  {name:"Msa Esports Dragon Edition Jersey", price:599, img:"https://via.placeholder.com/200x200?text=Dragon"},
-  {name:"Msa Esports Wolf Edition Jersey", price:599, img:"https://via.placeholder.com/200x200?text=Wolf"}
+  {name:"Msa Esports Octopus Edition Jersey", price:599, img:"https://lh3.googleusercontent.com/sitesv/APaQ0STj9XpPildDCIaffLG3kAHEXrvZw8bMNSkmRqRfJieFuWTfBsh1eADJWESZljW6_lf7AYWO_GJlHAOEmb3nfrTkNSkF3FBhIM0Rf4tKrfIQXAKW6dckX46GFsu5PhMoBvqmIsDIoTXr17t8rtYx3tWn3uHCPBdnTuVSBIhfoa-ul3S15kWl6WV_Gm5CXYYfzruD0fc-u06Dyv0tndZ0abM5ZODP30ln7Zragj0=w1280"},
+  {name:"Msa Esports Saturn Edition Jersey", price:599, img:"https://lh3.googleusercontent.com/sitesv/APaQ0STTJSFdu18FfQXI1xln_Q7q785Y5kBnOuiktvNn0QysbckKWv1j25ABmJ3bEodywp4nH60U30A10EjDtm8IGnw6H6zcMkww9St17b1J2J0VEEG9A0ZnZize58sRowPymlNFKB2-JN3XTgex2TFaeyGR_ixQl7F-YzwYHAId1aukipGDqN12oLY9IAQg8304YUKfG4QwmEkFQnZqXSBpeIMgStoslA6vFDwsEAM=w1280"},
+  {name:"Msa Esports Dragon Edition Jersey", price:599, img:"https://lh3.googleusercontent.com/sitesv/APaQ0SQqdFBBqmJXm_g7Ufb9oh7fURifpnehFywkFD11MH0yp1nSaNTsocnhgJ00MXvYiOH5GCoizq1CDzJ7wqAbzj2t6YNiv5XMgT6Krj0vLKA2ZWBe1tJPlArLDPpTndaJHT_blehAVuZ01PN4Z89JPquwgr7tFTvotO0oZkOGYbL2c5r4mE9GGYm3BMJvEs5PwloPvYTo3CojUsLOgLGSZFHcPxTtRyEy7UyS=w1280"},
+  {name:"Msa Esports Wolf Edition Jersey", price:599, img:"https://lh3.googleusercontent.com/sitesv/APaQ0SS12NCQ26Gdw9qePYYq2vPYyfsDKH-gR3GEV5L1ICapB62dharhzr0SkN86n-wo-fwelFRRkfvSCgwARQzTMNdm-qmgghA7UTrDq6o1uhfWC65-usV2fxtBB44jc1-aLW4fnuNI441FuKwdBsc9Zox_K1o7AzGc1VFE4AugYneCkkjVGPSofHFIsSk1R4MPyAMlmHZJ2HVg9r4cvLzc5ee3idtZ1S-179Uze2Y=w1280"}
 ];
 
 const productList=document.getElementById("productList");
@@ -71,7 +71,12 @@ const goToForm=document.getElementById("goToForm");
 
 function updateCartCount(){ cartBtn.textContent=`🛒 Sepet (${cart.length})`; }
 
-function calculateTotal(){ return cart.reduce((a,b)=>a+b.price,0); }
+function calculateTotal(){ 
+  let total=cart.reduce((a,b)=>a+b.price,0);
+  let discountInput=document.getElementById("discountInput")?.value || "";
+  if(discountInput) total = Math.round(total * 0.97);
+  return total;
+}
 
 function renderCart(){
   cartItemsDiv.innerHTML="";
