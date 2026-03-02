@@ -38,7 +38,7 @@ button:hover{background:#0099cc;}
     <input type="text" id="neighborhood" placeholder="Mahalle" required><br>
     <input type="text" id="street" placeholder="Sokak" required><br>
     <input type="text" id="addressDetails" placeholder="Adres Detayı" required><br>
-    <input type="text" id="discount" placeholder="İndirim Kodu (CARD)"><br>
+    <input type="text" id="discount" placeholder="İndirim Kodu"><br>
     <button id="submitOrder">Ödeme Yap</button>
   </div>
 </div>
@@ -48,7 +48,12 @@ let cart=JSON.parse(localStorage.getItem("userCart") || "[]");
 const cartItemsDiv=document.getElementById("cartItems");
 const cartTotalDiv=document.getElementById("cartTotal");
 
-function calculateTotal(){ return cart.reduce((a,b)=>a+b.price,0); }
+function calculateTotal(){ 
+  let total=cart.reduce((a,b)=>a+b.price,0);
+  const discount=document.getElementById("discount")?.value;
+  if(discount) total = Math.round(total*0.97); // %3 indirim
+  return total;
+}
 
 function renderCart(){
   cartItemsDiv.innerHTML="";
@@ -67,6 +72,8 @@ renderCart();
 
 function isValidTurkishPhone(phone){ return /^5\d{9}$/.test(phone.replace(/\D/g,'')); }
 
+document.getElementById("discount")?.addEventListener("input", renderCart);
+
 document.getElementById("submitOrder").addEventListener("click", ()=>{
   const name=document.getElementById("name").value;
   const email=document.getElementById("email").value;
@@ -82,24 +89,16 @@ document.getElementById("submitOrder").addEventListener("click", ()=>{
     alert("Lütfen tüm bilgileri eksiksiz doldurun!"); return;
   }
   if(!isValidTurkishPhone(phone)){ alert("Lütfen geçerli bir Türk telefon numarası girin (5xx xxx xx xx)!"); return; }
-  if(discount && discount.toUpperCase()!=="CARD"){ alert("Geçersiz indirim kodu!"); return; }
 
-  // EmailJS alanı
+  // Burada email gönderme ya da iyzico yönlendirme
   /*
   emailjs.send("service_id","template_id",{
-    name,name,
-    email,email,
-    phone,phone,
-    city,city,
-    district,district,
-    neighborhood,neighborhood,
-    street,street,
-    addressDetails,addressDetails,
-    discount,discount,
-    cart:JSON.stringify(cart)
+    name,name,email,email,phone,phone,
+    city,city,district,district,neighborhood,neighborhood,
+    street,street,addressDetails,addressDetails,
+    discount,discount,cart:JSON.stringify(cart)
   },"user_id");
   */
-
   cart=[]; localStorage.removeItem("userCart"); renderCart();
   alert("Sipariş alındı! Ödeme sayfasına yönlendiriliyorsunuz...");
   window.location.href="https://www.sandbox.shopier.com/checkoutlink"; // iyzico linki
